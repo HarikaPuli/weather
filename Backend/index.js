@@ -16,23 +16,30 @@ var db = client.db("weather");
 
  app.get("/weather",async (req, res)    => {
      
-   await ReadData(req.query.location);
-    const r = await GetWeather(req.query.location);
-    res.send(r);
+   const cacheData = await ReadData(req.query.location);
+    if(cacheData != null){
+        console.log("cacheData");
+        res.send(cacheData);
+        
+    }
+    else
+    {
+        console.log("Api");
+        const r = await GetWeather(req.query.location);
+        res.send(r);
+    }
    
 })
 
  async function ReadData(location)
 {
-    var data =db.collection("location").find({},function (err, result) {
-        if (err) {
-            console.log(err);
-        } else {
+    var data = await db.collection("location").findOne({_key: location});
+    if(data == null)
+    {
 
-            console.log(JSON.stringify(result));
-        }
-    })
-    return data;
+        return null;
+    }
+    return data.responseData;
 }
 
 async function GetWeather(location)
