@@ -1,10 +1,19 @@
 import  express  from 'express';
 import fetch from 'node-fetch';
+import cors from 'cors';
 var router = express.Router();
 var app = express();
 import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
 
+app.use(cors());
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
+ 
 
 app.use(express.json());
 dotenv.config();
@@ -19,6 +28,7 @@ var db = client.db("weather");
    const cacheData = await ReadData(req.query.location);
     if(cacheData != null){
         console.log("cacheData");
+        //res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:3000/');
         res.send(cacheData);
         
     }
